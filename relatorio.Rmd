@@ -1,0 +1,9 @@
+---
+title: "Relatorio"
+author: 
+  - name: Cristian Pessatti dos Anjos
+  - name: Thor
+  - name: Rafael
+output: html_document
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
