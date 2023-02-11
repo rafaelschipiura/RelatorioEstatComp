@@ -22,13 +22,36 @@ numeric_vars <- colnames(worms %>% select_if(is.numeric))
 for (aplot in numeric_vars) {
 	aplot <- ensym(aplot)
 	n <- worms %>% select(aplot) %>% drop_na(aplot) %>% nrow()
-	sturges <- ceiling(log(n,2))+1
+	sturges <- log(n,2)+1
 	print(worms %>% drop_na(aplot) %>% ggplot(aes(x = !!aplot)) + geom_histogram(bins = sturges))
 }
 factor_vars <- colnames(worms %>% select_if(is.factor))
 for (aplot in factor_vars) {
 	aplot <- ensym(aplot)
 	print(worms %>% drop_na(aplot) %>% ggplot(aes(x = !!aplot)) + geom_bar())
+}
+```
+
+# Análise Bivariada
+
+```{r, echo = FALSE, include = TRUE}
+duas_numeric <- combn(numeric_vars, 2)
+for (aplot in 1:ncol(duas_numeric)) {
+	primeira <- sym(duas_numeric[,aplot][1])
+	segunda <- sym(duas_numeric[,aplot][2])
+	print(worms %>% drop_na(primeira, segunda) %>% ggplot(aes(x = !!primeira, y = !!segunda)) + geom_point())
+}
+duas_factor <- combn(factor_vars, 2)
+for (aplot in 1:ncol(duas_factor)) {
+	primeira <- sym(duas_factor[,aplot][1])
+	segunda <- sym(duas_factor[,aplot][2])
+	print(worms %>% drop_na(primeira, segunda) %>% ggplot(aes(x = !!primeira, y = !!segunda)) + geom_count())
+}
+duas_mista <- expand_grid(factor_vars, numeric_vars)
+for (aplot in 1:nrow(duas_mista)) {
+	primeira <- sym(duas_mista[aplot,][[1]])
+	segunda <- sym(duas_mista[aplot,][[2]])
+	print(worms %>% drop_na(primeira, segunda) %>% ggplot(aes(x = !!primeira, y = !!segunda)) + geom_violin())
 }
 ```
 
