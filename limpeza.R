@@ -1,7 +1,7 @@
-#!/usr/bin/Rscript
-
+#!/usr/bin/env Rscript
 library("tidyverse")
 library("readxl")
+library("magrittr")
 
 colunas = tribble(
 ~tabela,						~tipo,		~nome,
@@ -105,12 +105,12 @@ colunas = tribble(
 "Texture",						"text",		"tex",
 "Source...99",						"skip",		"",
 )
+
 worms <- read_xlsx("./Nadolny_etal_Worms_Brazil_DRYAD_9.xlsx", sheet = "Data base", col_types = colunas$tipo)
 
-trans_names <- function(original) {
-	(filter(colunas, tabela %in% original))$nome
-}
+trans_names <- function(original) {(filter(colunas, tabela %in% original))$nome}
+worms %<>% rename_with(trans_names)
+worms %<>% mutate(estacao = toupper(estacao))
 
-worms %>%
-rename_with(trans_names) %>%
-mutate(across(where(is.character), factor))
+write_excel_csv2(worms, "worms.csv")
+
