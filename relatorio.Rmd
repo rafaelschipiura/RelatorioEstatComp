@@ -1,9 +1,34 @@
 ---
-title: "Relatorio"
+title: "Relatório Estatística Computacional"
 author: 
   - name: Cristian Pessatti dos Anjos
-  - name: Thor
-  - name: Rafael
-output: html_document
+  - name: Thor Marinho
+  - name: Rafael Alisson Schipiura
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
 ---
+
+```{r, echo = FALSE, include = FALSE}
+library("tidyverse")
+library("magrittr")
+
+worms <- read_csv2("./worms.csv")
+worms %<>% mutate(across(where(is.character), factor))
+```
+# Análise Univariada
+
+```{r, echo = FALSE, include = TRUE}
+numeric_vars <- colnames(worms %>% select_if(is.numeric))
+for (aplot in numeric_vars) {
+	aplot <- ensym(aplot)
+	n <- worms %>% select(aplot) %>% drop_na(aplot) %>% nrow()
+	sturges <- ceiling(log(n,2))+1
+	print(worms %>% drop_na(aplot) %>% ggplot(aes(x = !!aplot)) + geom_histogram(bins = sturges))
+}
+factor_vars <- colnames(worms %>% select_if(is.factor))
+for (aplot in factor_vars) {
+	aplot <- ensym(aplot)
+	print(worms %>% drop_na(aplot) %>% ggplot(aes(x = !!aplot)) + geom_bar())
+}
+```
+
