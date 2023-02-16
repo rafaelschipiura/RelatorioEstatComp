@@ -32,7 +32,7 @@ for (aplot in numeric_vars) {
 factor_vars <- colnames(worms %>% select_if(is.factor))
 for (aplot in factor_vars) {
 	symplot <- ensym(aplot)
-	print(worms %>% drop_na(all_of(symplot)) %>% ggplot(aes(x = !!symplot)) + geom_bar() + labs(x = legenda[aplot,][2], y = "frequência"))
+	print(worms %>% drop_na(all_of(symplot)) %>% ggplot(aes(x = !!symplot)) + geom_bar() + theme(axis.text.x = element_text(angle = 90)) + labs(x = legenda[aplot,][2], y = "frequência"))
 }
 ```
 
@@ -61,7 +61,7 @@ for (aplot in 1:nrow(duas_mista)) {
 	symprim <- sym(primeira)
 	segunda <- duas_mista[aplot,][[2]]
 	symseg <- sym(segunda)
-	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_boxplot() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]))
+	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_boxplot() + theme(axis.text.x = element_text(angle = 90)) + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]))
 }
 ```
 
