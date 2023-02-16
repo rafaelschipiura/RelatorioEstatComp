@@ -61,7 +61,7 @@ for (aplot in 1:nrow(duas_mista)) {
 	symprim <- sym(primeira)
 	segunda <- duas_mista[aplot,][[2]]
 	symseg <- sym(segunda)
-	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_violin() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]))
+	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_boxplot() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]))
 }
 ```
 
