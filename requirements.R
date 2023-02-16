@@ -1,0 +1,6 @@
+install.packages("XML")
+install.packages("tidyverse")
+install.packages("readxl")
+install.packages("magrittr")
+install.packages("rvest")
+install.packages("corrplot")

@@ -1,9 +1,102 @@
 ---
-title: "Relatorio"
+title: "Relatório Estatística Computacional"
 author: 
-  - name: Cristian Pessatti dos Anjos
-  - name: Thor
-  - name: Rafael
-output: html_document
+- Cristian Pessatti dos Anjos
+- Thor Marinho
+- Rafael Alisson Schipiura
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+header-includes: 
+  - \renewcommand{\and}{\\}
 ---
+
+```{r, echo = FALSE, include = FALSE}
+library("tidyverse")
+library("magrittr")
+
+worms <- read_csv2("./worms.csv")
+worms %<>% mutate(across(where(is.character), factor))
+legenda <- read_csv2("./legenda.csv")
+rownames(legenda) <- legenda$var
+```
+# Análise Univariada
+
+```{r, echo = FALSE, include = TRUE}
+numeric_vars <- colnames(worms %>% select_if(is.numeric))
+for (aplot in numeric_vars) {
+	symplot <- ensym(aplot)
+	n <- worms %>% select(all_of(symplot)) %>% drop_na(all_of(symplot)) %>% nrow()
+	sturges <- log(n,2)+1
+	print(worms %>% drop_na(all_of(symplot)) %>% ggplot(aes(x = !!symplot)) + geom_histogram(bins = sturges) +  labs(x = legenda[aplot,][2], y="frequência"))
+}
+factor_vars <- colnames(worms %>% select_if(is.factor))
+for (aplot in factor_vars) {
+	symplot <- ensym(aplot)
+	print(worms %>% drop_na(all_of(symplot)) %>% ggplot(aes(x = !!symplot)) + geom_bar() + labs(x = legenda[aplot,][2], y = "frequência"))
+}
+```
+
+# Análise Bivariada
+
+```{r, echo = FALSE, include = TRUE}
+duas_numeric <- combn(numeric_vars, 2)
+for (aplot in 1:ncol(duas_numeric)) {
+	primeira <- duas_numeric[,aplot][1]
+	segunda <- duas_numeric[,aplot][2]
+	symprim <- sym(primeira)
+	symseg <- sym(segunda)
+	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_point() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]) )
+}
+duas_factor <- combn(factor_vars, 2)
+for (aplot in 1:ncol(duas_factor)) {
+	primeira <- duas_factor[,aplot][1]
+	symprim <- sym(primeira)
+	segunda <- duas_factor[,aplot][2]
+	symseg <- sym(segunda)
+	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_count() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]))
+}
+duas_mista <- expand_grid(factor_vars, numeric_vars)
+for (aplot in 1:nrow(duas_mista)) {
+	primeira <- duas_mista[aplot,][[1]]
+	symprim <- sym(primeira)
+	segunda <- duas_mista[aplot,][[2]]
+	symseg <- sym(segunda)
+	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_violin() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]))
+}
+```
+
+# Tabela de Correlação
+
+```{r, echo = FALSE, include = TRUE}
+library(corrplot)
+
+worms_numeric <- worms[ , numeric_vars]
+worms_numeric <- worms_numeric %>% drop_na()
+worms_numeric %>% cor(worms_numeric, method = "pearson")
+
+mycor<- function(x, ...){
+  r<- apply(x, 2, function(j){
+    apply(x, 2, function(i){
+      as.numeric(cor.test(i,j, ...)$estimate)
+    })
+  })
+  P<- apply(x, 2, function(j){
+    apply(x, 2, function(i){
+      as.numeric(cor.test(i,j, ...)$p.value)
+    })
+  })
+  out<-c()
+  out$P<- P
+  out$r<- r
+  return(out) 
+}
+
+mycorDat <- mycor(worms_numeric)
+
+jpeg("corplotTest.jpg", width=800, height=800, quality=100, pointsize=24)
+corrplot(corr=mycorDat$r,
+         p.mat = mycorDat$P,
+         type="full", insig="pch", sig.level =.1, pch.cex = .9)
+dev.off()
+```
+
