@@ -45,7 +45,7 @@ for (aplot in 1:ncol(duas_numeric)) {
 	segunda <- duas_numeric[,aplot][2]
 	symprim <- sym(primeira)
 	symseg <- sym(segunda)
-	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_point() + geom_smooth(method = "lm",formula = y ~ x) + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]) )
+	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_point() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]) )
 }
 duas_factor <- combn(factor_vars, 2)
 for (aplot in 1:ncol(duas_factor)) {
@@ -61,35 +61,35 @@ for (aplot in 1:nrow(duas_mista)) {
 	symprim <- sym(primeira)
 	segunda <- duas_mista[aplot,][[2]]
 	symseg <- sym(segunda)
-	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_violin() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]))
+	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_boxplot() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]))
 }
 ```
 
 # Tabela de Correlação
 
 ```{r, echo = FALSE, include = TRUE}
-# library(corrplot)
-# 
-# worms_numeric <- worms[ , numeric_vars]
-# worms_numeric <- worms_numeric %>% drop_na()
-# worms_numeric %>% cor(worms_numeric, method = "pearson")
-# 
-# mycor<- function(x, ...){
-#   r<- apply(x, 2, function(j){
-#     apply(x, 2, function(i){
-#       as.numeric(cor.test(i,j, ...)$estimate)
-#     })
-#   })
-#   P<- apply(x, 2, function(j){
-#     apply(x, 2, function(i){
-#       as.numeric(cor.test(i,j, ...)$p.value)
-#     })
-#   })
-#   out<-c()
-#   out$P<- P
-#   out$r<- r
-#   return(out) 
-# }
+#library(corrplot)
+
+#worms_numeric <- worms[ , numeric_vars]
+#worms_numeric <- worms_numeric %>% drop_na()
+#worms_numeric %>% cor(worms_numeric, method = "pearson")
+#
+#mycor<- function(x, ...){
+#  r<- apply(x, 2, function(j){
+#    apply(x, 2, function(i){
+#      as.numeric(cor.test(i,j, ...)$estimate)
+#    })
+#  })
+#  P<- apply(x, 2, function(j){
+#    apply(x, 2, function(i){
+#      as.numeric(cor.test(i,j, ...)$p.value)
+#    })
+#  })
+#  out<-c()
+#  out$P<- P
+#  out$r<- r
+#  return(out) 
+#}
 
 #mycorDat <- mycor(worms_numeric)
 
