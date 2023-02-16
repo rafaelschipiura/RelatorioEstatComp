@@ -1,9 +1,9 @@
 .PHONY: all html pdf clean
-.DEFAULT: html
-
-html: relatorio.html
+.DEFAULT: pdf
 
 pdf: relatorio.pdf
+
+html: relatorio.html
 
 all: html pdf
 
