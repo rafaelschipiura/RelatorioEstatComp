@@ -67,36 +67,36 @@ for (aplot in 1:nrow(duas_mista)) {
 
 # Tabela de Correlação
 
-```{r, echo = FALSE, include = TRUE}
-library(corrplot)
+#```{r, echo = FALSE, include = TRUE}
+#library(corrplot)
 
-worms_numeric <- worms[ , numeric_vars]
-worms_numeric <- worms_numeric %>% drop_na()
-worms_numeric %>% cor(worms_numeric, method = "pearson")
+#worms_numeric <- worms[ , numeric_vars]
+#worms_numeric <- worms_numeric %>% drop_na()
+#worms_numeric %>% cor(worms_numeric, method = "pearson")
 
-mycor<- function(x, ...){
-  r<- apply(x, 2, function(j){
-    apply(x, 2, function(i){
-      as.numeric(cor.test(i,j, ...)$estimate)
-    })
-  })
-  P<- apply(x, 2, function(j){
-    apply(x, 2, function(i){
-      as.numeric(cor.test(i,j, ...)$p.value)
-    })
-  })
-  out<-c()
-  out$P<- P
-  out$r<- r
-  return(out) 
-}
+#mycor<- function(x, ...){
+#  r<- apply(x, 2, function(j){
+#    apply(x, 2, function(i){
+#      as.numeric(cor.test(i,j, ...)$estimate)
+#    })
+#  })
+#  P<- apply(x, 2, function(j){
+#    apply(x, 2, function(i){
+#      as.numeric(cor.test(i,j, ...)$p.value)
+#    })
+#  })
+#  out<-c()
+#  out$P<- P
+#  out$r<- r
+#  return(out) 
+#}
 
-mycorDat <- mycor(worms_numeric)
+#mycorDat <- mycor(worms_numeric)
 
-jpeg("corplotTest.jpg", width=800, height=800, quality=100, pointsize=24)
-corrplot(corr=mycorDat$r,
-         p.mat = mycorDat$P,
-         type="full", insig="pch", sig.level =.1, pch.cex = .9)
-dev.off()
-```
+#jpeg("corplotTest.jpg", width=800, height=800, quality=100, pointsize=24)
+#corrplot(corr=mycorDat$r,
+#         p.mat = mycorDat$P,
+#         type="full", insig="pch", sig.level =.1, pch.cex = .9)
+#dev.off()
+#```
 
