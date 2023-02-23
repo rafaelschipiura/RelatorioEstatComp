@@ -19,19 +19,25 @@ worms %<>% mutate(across(where(is.character), factor))
 legenda <- read_csv2("./legenda.csv")
 rownames(legenda) <- legenda$var
 ```
-<<<<<<< HEAD
 
-# Análise Univariada
-=======
 # Introdução
 
-A base de dados usada no presente estudo buscou coletar variáveis relacionadas às minhocas, ao solo, ao ambiente e ao manejo avaliadas em 124 estudos publicados que quantificaram a abundância de minhocas (> 7300 amostras) em 765 locais com diferentes tipos de clima, solos, uso da terra e sistemas de manejo no Brasil. O dataset propõe um conjunto de variáveis que devem ser avaliadas ao estudar as comunidades de minhocas e outros grupos de macrofauna para promover o uso de minhocas como bioindicadores da qualidade do solo.
+A base de dados usada no presente estudo buscou coletar
+variáveis relacionadas às minhocas, ao solo, ao ambiente
+e ao manejo avaliadas em 124 estudos publicados que
+quantificaram a abundância de minhocas (> 7300 amostras)
+em 765 locais com diferentes tipos de clima, solos, uso da terra
+e sistemas de manejo no Brasil. O dataset propõe um conjunto de
+variáveis que devem ser avaliadas ao estudar as comunidades de
+minhocas e outros grupos de macrofauna para promover
+o uso de minhocas como bioindicadores da qualidade do solo.
+As variáveis resposta são 'densidade',
+número de indivíduos por metro cúbico,
+e 'massa', peso dos indíviduos normalizado para um metro cúbico.
 
 # Análise Univariada
+Analisando cada variável individualmente. Primeiro as variáveis quantitativas, todas contínuas. Mesmo a densidade (em indivíduos/m³) é uma variável contínua devido à normalização realizada, pois não se coleta um metro cúbico de solo para contar os indivíduos.
 
-Analisando cada variável individualmente
-
->>>>>>> f880dfe31f09a0d6652f27f2ea0861f393065b5f
 ```{r, echo = FALSE, include = TRUE}
 numeric_vars <- colnames(worms %>% select_if(is.numeric))
 for (aplot in numeric_vars) {
@@ -40,6 +46,11 @@ for (aplot in numeric_vars) {
 	sturges <- log(n,2)+1
 	print(worms %>% drop_na(all_of(symplot)) %>% ggplot(aes(x = !!symplot)) + geom_histogram(bins = sturges) +  labs(x = legenda[aplot,][2], y="frequência"))
 }
+```
+
+E as variáveis qualitativas, todas nominais.
+
+```{r, echo = FALSE, include = TRUE}
 factor_vars <- colnames(worms %>% select_if(is.factor))
 for (aplot in factor_vars) {
 	symplot <- ensym(aplot)
@@ -49,7 +60,7 @@ for (aplot in factor_vars) {
 
 # Análise Bivariada
 
-Analisando as variáveis comparadas umas com as outras
+Analisando as variáveis comparadas umas com as outras. Primeiro quantitativas, em pares.
 
 ```{r, echo = FALSE, include = TRUE}
 duas_numeric <- combn(numeric_vars, 2)
@@ -60,6 +71,11 @@ for (aplot in 1:ncol(duas_numeric)) {
 	symseg <- sym(segunda)
 	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_point() + geom_smooth(method = "lm",formula = y ~ x) + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]) )
 }
+```
+
+E os pares de variáveis qualitativas.
+
+```{r, echo = FALSE, include = TRUE}
 duas_factor <- combn(factor_vars, 2)
 for (aplot in 1:ncol(duas_factor)) {
 	primeira <- duas_factor[,aplot][1]
@@ -68,6 +84,11 @@ for (aplot in 1:ncol(duas_factor)) {
 	symseg <- sym(segunda)
 	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_count() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]))
 }
+```
+E, por fim, combinações de uma variável quatitativa e outra qualitativa:
+
+
+```{r, echo = FALSE, include = TRUE}
 duas_mista <- expand_grid(factor_vars, numeric_vars)
 for (aplot in 1:nrow(duas_mista)) {
 	primeira <- duas_mista[aplot,][[1]]
@@ -102,16 +123,11 @@ mycor<- function(x, ...){
   return(out)
 }
 
-
 mycorDat <- mycor(worms_numeric)
 
-invisible(jpeg("corplotTest.jpg", width=800, height=800, quality=100, pointsize=24))
 corrplot(corr=mycorDat$r,
         p.mat = mycorDat$P,
         type="full", insig="pch", sig.level =.1, pch.cex = .9)
-dev.off()
-
-knitr::include_graphics("corplotTest.jpg")
 ```
 
 # Correlação das variáveis com a variável densidade
