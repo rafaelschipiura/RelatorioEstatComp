@@ -1,0 +1,25 @@
+Relatório Estatística Computacional
+
+Autores:
+Cristian Pessatti dos Anjos
+Thor Marinho
+Rafael Alisson Schipiura
+
+23 fevereiro, 2023
+
+O relatório é reproduzível usando o comando:
+
+	make
+
+Que chama, quando necessário, o script `extract_worms_data.R` para fazer o download da planilha em formato `.xlsx`, chamado `Nadolny_etal_Worms_Brazil_DRYAD_9.xlsx`. Se por algum motivo houver falha em conseguir os dados, uma cópia foi incluída com o nome `_Nadolny_etal_Worms_Brazil_DRYAD_9.xlsx`.
+
+Em seguida, chama o script `limpeza.R` que faz o pré-processamento dos dados:
+* Seleciona as colunas que queremos tratar;
+* Renomeia as colunas para nomes mais fáceis de lidar;
+* Converte as variáveis para o tipo adequado;
+* Remove algumas observações que não entendemos (precisaríamos da ajuda do biólogo numa análise real);
+* Padroniza uma variável que está com mistura de caixa alta e caixa baixa variada;
+* Salva os dados limpos em csv (worms.csv) que será lido pelo script de Rmarkdown;
+* Salva um arquivo em csv com descrições das variáveis (legenda.csv).
+
+Estando prontos os arquivos worms.csv e legenda.csv, é chamado o script `makepdf.R` que compila o arquivo PDF à partir da fonte `relatorio.Rmd`.
