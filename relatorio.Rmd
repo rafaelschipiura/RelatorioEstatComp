@@ -19,6 +19,7 @@ worms %<>% mutate(across(where(is.character), factor))
 legenda <- read_csv2("./legenda.csv")
 rownames(legenda) <- legenda$var
 ```
+
 # Introdução
 
 A base de dados usada no presente estudo buscou coletar
@@ -35,7 +36,6 @@ número de indivíduos por metro cúbico,
 e 'massa', peso dos indíviduos normalizado para um metro cúbico.
 
 # Análise Univariada
-
 Analisando cada variável individualmente. Primeiro as variáveis quantitativas, todas contínuas. Mesmo a densidade (em indivíduos/m³) é uma variável contínua devido à normalização realizada, pois não se coleta um metro cúbico de solo para contar os indivíduos.
 
 ```{r, echo = FALSE, include = TRUE}
@@ -128,6 +128,77 @@ mycorDat <- mycor(worms_numeric)
 corrplot(corr=mycorDat$r,
         p.mat = mycorDat$P,
         type="full", insig="pch", sig.level =.1, pch.cex = .9)
-
 ```
 
+# Correlação das variáveis com a variável densidade
+
+```{r, echo = FALSE, include = TRUE}
+nomes_colunas_dens_corr <- c("Estatística", "Parâmetro", "p-valor", "Estimativa", "Valor nulo", "Alternativa", "Método", "Variável", "Intervalo de confiança")
+
+dens_corr <- matrix(ncol = 9)
+for(numeric_var in numeric_vars) {
+  corr_result <- cor.test(worms_numeric$dens, worms_numeric[[numeric_var]])
+  corr_result$data.name <- numeric_var
+  dens_corr <- rbind(
+    matrix(corr_result, ncol = 9),
+    dens_corr
+  )
+}
+
+dens_corr_df <- data.frame(dens_corr)
+colnames(dens_corr_df) <- nomes_colunas_dens_corr
+knitr::kable(dens_corr_df)
+```
+
+# Correlação das variáveis com a variável massa
+
+```{r, echo = FALSE, include = TRUE}
+nomes_colunas_massa_corr <- c("Estatística", "Parâmetro", "p-valor", "Estimativa", "Valor nulo", "Alternativa", "Método", "Variável", "Intervalo de confiança")
+
+massa_corr <- matrix(ncol = 9)
+for(numeric_var in numeric_vars) {
+  corr_result <- cor.test(worms_numeric$massa, worms_numeric[[numeric_var]])
+  corr_result$data.name <- numeric_var
+  massa_corr <- rbind(
+    matrix(corr_result, ncol = 9),
+    massa_corr
+  )
+}
+
+massa_corr_df <- data.frame(massa_corr)
+colnames(massa_corr_df) <- nomes_colunas_massa_corr
+knitr::kable(massa_corr_df)
+```
+
+# Teste de hipótese para verificar linearidade da variável em relação a variável dens
+```{r, echo = FALSE, include = TRUE}
+check_hypothesis <- function(variable, alpha_value, df, t_statistic) {
+  p.upper <- pt(abs(t), df = df, lower.tail = FALSE)
+  p.lower <- pt(-abs(t), df = df, lower.tail = TRUE)
+  p <- p.upper + p.lower
+  return(p <= alpha)
+}
+
+hypothesis_result_dens_corr_df <- data.frame(`Variável` = character(), `Rejeita hipótese nula` = logical())
+
+for (var in dens_corr_df$`Variável`) {
+  df <- dens_corr_df[dens_corr_df$`Variável` == var,]$`Parâmetro`[[1]] - 2
+  hypothesis_result_dens_corr <- check_hypothesis(variable = var, alpha_value = 0.05, df = df, t_statistic = dens_corr_df$`Estatística`)
+  hypothesis_result_dens_corr_df[nrow(hypothesis_result_dens_corr_df) + 1,] <- c(var, hypothesis_result_dens_corr)
+}
+
+knitr::kable(hypothesis_result_dens_corr_df)
+```
+
+# Teste de hipótese para verificar linearidade da variável em relação a variável massa
+```{r, echo = FALSE, include = TRUE}
+hypothesis_result_massa_corr_df <- data.frame(`Variável` = character(), `Rejeita hipótese nula` = logical())
+
+for (var in massa_corr_df$`Variável`) {
+  df <- massa_corr_df[massa_corr_df$`Variável` == var,]$`Parâmetro`[[1]] - 2
+  hypothesis_result_massa_corr <- check_hypothesis(variable = var, alpha_value = 0.05, df = df, t_statistic = massa_corr_df$`Estatística`)
+  hypothesis_result_massa_corr_df[nrow(hypothesis_result_massa_corr_df) + 1,] <- c(var, hypothesis_result_massa_corr)
+}
+
+knitr::kable(hypothesis_result_massa_corr_df)
+```
