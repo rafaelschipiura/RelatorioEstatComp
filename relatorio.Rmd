@@ -25,6 +25,8 @@ A base de dados usada no presente estudo buscou coletar variáveis relacionadas 
 
 # Análise Univariada
 
+Analisando cada variável individualmente
+
 ```{r, echo = FALSE, include = TRUE}
 numeric_vars <- colnames(worms %>% select_if(is.numeric))
 for (aplot in numeric_vars) {
@@ -41,6 +43,8 @@ for (aplot in factor_vars) {
 ```
 
 # Análise Bivariada
+
+Analisando as variáveis comparadas umas com as outras
 
 ```{r, echo = FALSE, include = TRUE}
 duas_numeric <- combn(numeric_vars, 2)
@@ -71,36 +75,36 @@ for (aplot in 1:nrow(duas_mista)) {
 
 # Tabela de Correlação
 
-```{r, echo = FALSE, include = TRUE}
-# library(corrplot)
-# 
-# worms_numeric <- worms[ , numeric_vars]
-# worms_numeric <- worms_numeric %>% drop_na()
-# worms_numeric %>% cor(worms_numeric, method = "pearson")
-# 
-# mycor<- function(x, ...){
-#   r<- apply(x, 2, function(j){
-#     apply(x, 2, function(i){
-#       as.numeric(cor.test(i,j, ...)$estimate)
-#     })
-#   })
-#   P<- apply(x, 2, function(j){
-#     apply(x, 2, function(i){
-#       as.numeric(cor.test(i,j, ...)$p.value)
-#     })
-#   })
-#   out<-c()
-#   out$P<- P
-#   out$r<- r
-#   return(out) 
-# }
+```{r, echo = FALSE, include = TRUE, message=FALSE, warning=FALSE}
+library(corrplot)
 
-#mycorDat <- mycor(worms_numeric)
+worms_numeric <- worms[, numeric_vars]
 
-#jpeg("corplotTest.jpg", width=800, height=800, quality=100, pointsize=24)
-#corrplot(corr=mycorDat$r,
-#         p.mat = mycorDat$P,
-#         type="full", insig="pch", sig.level =.1, pch.cex = .9)
-#dev.off()
+mycor<- function(x, ...){
+  r<- apply(x, 2, function(j){
+    apply(x, 2, function(i){
+      as.numeric(cor.test(i,j, ...)$estimate)
+    })
+  })
+  P<- apply(x, 2, function(j){
+    apply(x, 2, function(i){
+      as.numeric(cor.test(i,j, ...)$p.value)
+    })
+  })
+  out<-c()
+  out$P<- P
+  out$r<- r
+  return(out)
+}
+
+mycorDat <- mycor(worms_numeric)
+
+invisible(jpeg("corplotTest.jpg", width=800, height=800, quality=100, pointsize=24))
+corrplot(corr=mycorDat$r,
+        p.mat = mycorDat$P,
+        type="full", insig="pch", sig.level =.1, pch.cex = .9)
+dev.off()
+
+knitr::include_graphics("corplotTest.jpg")
 ```
 
