@@ -21,9 +21,11 @@ rownames(legenda) <- legenda$var
 ```
 # Introdução
 
-A base de dados usada no presente estudo buscou coletar variáveis relacionadas às minhocas, ao solo, ao ambiente e ao manejo avaliadas em 124 estudos publicados que quantificaram a abundância de minhocas (> 7300 amostras) em 765 locais com diferentes tipos de clima, solos, uso da terra e sistemas de manejo no Brasil. O dataset propõe um conjunto de variáveis que devem ser avaliadas ao estudar as comunidades de minhocas e outros grupos de macrofauna para promover o uso de minhocas como bioindicadores da qualidade do solo.
+A base de dados usada no presente estudo buscou coletar variáveis relacionadas às minhocas, ao solo, ao ambiente e ao manejo avaliadas em 124 estudos publicados que quantificaram a abundância de minhocas (> 7300 amostras) em 765 locais com diferentes tipos de clima, solos, uso da terra e sistemas de manejo no Brasil. O dataset propõe um conjunto de variáveis que devem ser avaliadas ao estudar as comunidades de minhocas e outros grupos de macrofauna para promover o uso de minhocas como bioindicadores da qualidade do solo. As variáveis resposta são `densidade', número de indivíduos por metro cúbico, e `massa', peso dos indíviduos normalizado para um metro cúbico.
 
 # Análise Univariada
+
+Analisando cada variável individualmente. Primeiro as variáveis quantitativas, todas contínuas. Mesmo a densidade (em indivíduos/m³) é uma variável contínua devido à normalização realizada, pois não se coleta um metro cúbico de solo para contar os indivíduos.
 
 ```{r, echo = FALSE, include = TRUE}
 numeric_vars <- colnames(worms %>% select_if(is.numeric))
@@ -33,6 +35,11 @@ for (aplot in numeric_vars) {
 	sturges <- log(n,2)+1
 	print(worms %>% drop_na(all_of(symplot)) %>% ggplot(aes(x = !!symplot)) + geom_histogram(bins = sturges) +  labs(x = legenda[aplot,][2], y="frequência"))
 }
+```
+
+E as variáveis qualitativas, todas nominais.
+
+```{r, echo = FALSE, include = TRUE}
 factor_vars <- colnames(worms %>% select_if(is.factor))
 for (aplot in factor_vars) {
 	symplot <- ensym(aplot)
@@ -41,6 +48,8 @@ for (aplot in factor_vars) {
 ```
 
 # Análise Bivariada
+
+Analisando as variáveis comparadas umas com as outras. Primeiro quantitativas, em pares.
 
 ```{r, echo = FALSE, include = TRUE}
 duas_numeric <- combn(numeric_vars, 2)
@@ -51,6 +60,11 @@ for (aplot in 1:ncol(duas_numeric)) {
 	symseg <- sym(segunda)
 	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_point() + geom_smooth(method = "lm",formula = y ~ x) + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]) )
 }
+```
+
+E os pares de variáveis qualitativas.
+
+```{r, echo = FALSE, include = TRUE}
 duas_factor <- combn(factor_vars, 2)
 for (aplot in 1:ncol(duas_factor)) {
 	primeira <- duas_factor[,aplot][1]
@@ -59,6 +73,11 @@ for (aplot in 1:ncol(duas_factor)) {
 	symseg <- sym(segunda)
 	print(worms %>% drop_na(all_of(symprim), all_of(symseg)) %>% ggplot(aes(x = !!symprim, y = !!symseg)) + geom_count() + labs(x = legenda[primeira,][2], y = legenda[segunda,][2]))
 }
+```
+E, por fim, combinações de uma variável quatitativa e outra qualitativa:
+
+
+```{r, echo = FALSE, include = TRUE}
 duas_mista <- expand_grid(factor_vars, numeric_vars)
 for (aplot in 1:nrow(duas_mista)) {
 	primeira <- duas_mista[aplot,][[1]]
@@ -71,36 +90,33 @@ for (aplot in 1:nrow(duas_mista)) {
 
 # Tabela de Correlação
 
-```{r, echo = FALSE, include = TRUE}
-# library(corrplot)
-# 
-# worms_numeric <- worms[ , numeric_vars]
-# worms_numeric <- worms_numeric %>% drop_na()
-# worms_numeric %>% cor(worms_numeric, method = "pearson")
-# 
-# mycor<- function(x, ...){
-#   r<- apply(x, 2, function(j){
-#     apply(x, 2, function(i){
-#       as.numeric(cor.test(i,j, ...)$estimate)
-#     })
-#   })
-#   P<- apply(x, 2, function(j){
-#     apply(x, 2, function(i){
-#       as.numeric(cor.test(i,j, ...)$p.value)
-#     })
-#   })
-#   out<-c()
-#   out$P<- P
-#   out$r<- r
-#   return(out) 
-# }
+```{r, echo = FALSE, include = TRUE, message=FALSE, warning=FALSE}
+library(corrplot)
 
-#mycorDat <- mycor(worms_numeric)
+worms_numeric <- worms[, numeric_vars]
 
-#jpeg("corplotTest.jpg", width=800, height=800, quality=100, pointsize=24)
-#corrplot(corr=mycorDat$r,
-#         p.mat = mycorDat$P,
-#         type="full", insig="pch", sig.level =.1, pch.cex = .9)
-#dev.off()
+mycor<- function(x, ...){
+  r<- apply(x, 2, function(j){
+    apply(x, 2, function(i){
+      as.numeric(cor.test(i,j, ...)$estimate)
+    })
+  })
+  P<- apply(x, 2, function(j){
+    apply(x, 2, function(i){
+      as.numeric(cor.test(i,j, ...)$p.value)
+    })
+  })
+  out<-c()
+  out$P<- P
+  out$r<- r
+  return(out)
+}
+
+mycorDat <- mycor(worms_numeric)
+
+corrplot(corr=mycorDat$r,
+        p.mat = mycorDat$P,
+        type="full", insig="pch", sig.level =.1, pch.cex = .9)
+
 ```
 
