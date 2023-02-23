@@ -19,6 +19,10 @@ worms %<>% mutate(across(where(is.character), factor))
 legenda <- read_csv2("./legenda.csv")
 rownames(legenda) <- legenda$var
 ```
+# Introdução
+
+A base de dados usada no presente estudo buscou coletar variáveis relacionadas às minhocas, ao solo, ao ambiente e ao manejo avaliadas em 124 estudos publicados que quantificaram a abundância de minhocas (> 7300 amostras) em 765 locais com diferentes tipos de clima, solos, uso da terra e sistemas de manejo no Brasil. O dataset propõe um conjunto de variáveis que devem ser avaliadas ao estudar as comunidades de minhocas e outros grupos de macrofauna para promover o uso de minhocas como bioindicadores da qualidade do solo.
+
 # Análise Univariada
 
 ```{r, echo = FALSE, include = TRUE}
