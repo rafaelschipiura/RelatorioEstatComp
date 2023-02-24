@@ -8,6 +8,9 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: pdf_document
 header-includes: 
   - \renewcommand{\and}{\\}
+bibliography: cite.bib
+csl: associacao-brasileira-de-normas-tecnicas-note.csl
+nocite: '@*'
 ---
 
 ```{r, echo = FALSE, include = FALSE}
@@ -123,13 +126,10 @@ mycor<- function(x, ...){
 
 mycorDat <- mycor(worms_numeric)
 
-invisible(jpeg("corplotTest.jpg", width=800, height=800, quality=100, pointsize=24))
 corrplot(corr=mycorDat$r,
         p.mat = mycorDat$P,
         type="full", insig="pch", sig.level =.1, pch.cex = .9)
-dev.off()
 
-knitr::include_graphics("corplotTest.jpg")
 ```
 
 # Correlação das variáveis com a variável densidade
@@ -216,3 +216,4 @@ for (var in massa_corr_df$`Variável`) {
 
 knitr::kable(hypothesis_result_massa_corr_df)
 ```
+# Referências
