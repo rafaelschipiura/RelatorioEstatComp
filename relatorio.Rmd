@@ -103,9 +103,7 @@ for (aplot in 1:nrow(duas_mista)) {
 
 ```{r, echo = FALSE, include = TRUE, message=FALSE, warning=FALSE}
 library(corrplot)
-
 worms_numeric <- worms[, numeric_vars]
-
 mycor<- function(x, ...){
   r<- apply(x, 2, function(j){
     apply(x, 2, function(i){
@@ -125,9 +123,13 @@ mycor<- function(x, ...){
 
 mycorDat <- mycor(worms_numeric)
 
+invisible(jpeg("corplotTest.jpg", width=800, height=800, quality=100, pointsize=24))
 corrplot(corr=mycorDat$r,
         p.mat = mycorDat$P,
         type="full", insig="pch", sig.level =.1, pch.cex = .9)
+dev.off()
+
+knitr::include_graphics("corplotTest.jpg")
 ```
 
 # Correlação das variáveis com a variável densidade
@@ -171,6 +173,7 @@ knitr::kable(massa_corr_df)
 ```
 
 # Teste de hipótese para verificar linearidade da variável em relação a variável dens
+
 ```{r, echo = FALSE, include = TRUE}
 check_hypothesis <- function(variable, alpha_value, df, t_statistic) {
   p.upper <- pt(abs(t), df = df, lower.tail = FALSE)
@@ -191,6 +194,7 @@ knitr::kable(hypothesis_result_dens_corr_df)
 ```
 
 # Teste de hipótese para verificar linearidade da variável em relação a variável massa
+
 ```{r, echo = FALSE, include = TRUE}
 hypothesis_result_massa_corr_df <- data.frame(`Variável` = character(), `Rejeita hipótese nula` = logical())
 
