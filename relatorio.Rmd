@@ -175,19 +175,22 @@ knitr::kable(massa_corr_df)
 # Teste de hipótese para verificar linearidade da variável em relação a variável dens
 
 ```{r, echo = FALSE, include = TRUE}
-check_hypothesis <- function(variable, alpha_value, df, t_statistic) {
-  p.upper <- pt(abs(t), df = df, lower.tail = FALSE)
-  p.lower <- pt(-abs(t), df = df, lower.tail = TRUE)
+check_hypothesis <- function(alpha_value, df, t_statistic) {
+  p.upper <- pt(abs(t_statistic), df = df, lower.tail = FALSE)
+  p.lower <- pt(-abs(t_statistic), df = df, lower.tail = TRUE)
   p <- p.upper + p.lower
-  return(p <= alpha)
+  return(p <= alpha_value)
 }
 
 hypothesis_result_dens_corr_df <- data.frame(`Variável` = character(), `Rejeita hipótese nula` = logical())
 
 for (var in dens_corr_df$`Variável`) {
   df <- dens_corr_df[dens_corr_df$`Variável` == var,]$`Parâmetro`[[1]] - 2
-  hypothesis_result_dens_corr <- check_hypothesis(variable = var, alpha_value = 0.05, df = df, t_statistic = dens_corr_df$`Estatística`)
-  hypothesis_result_dens_corr_df[nrow(hypothesis_result_dens_corr_df) + 1,] <- c(var, hypothesis_result_dens_corr)
+  t_statistic <- dens_corr_df[dens_corr_df$`Variável` == var,]$`Estatística`[[1]]
+  if (is.numeric(t_statistic)) {
+    hypothesis_result_dens_corr <- check_hypothesis(alpha_value = 0.05, df = df, t_statistic = t_statistic)
+    hypothesis_result_dens_corr_df[nrow(hypothesis_result_dens_corr_df) + 1,] <- c(var, hypothesis_result_dens_corr)
+  }
 }
 
 knitr::kable(hypothesis_result_dens_corr_df)
@@ -200,8 +203,11 @@ hypothesis_result_massa_corr_df <- data.frame(`Variável` = character(), `Rejeit
 
 for (var in massa_corr_df$`Variável`) {
   df <- massa_corr_df[massa_corr_df$`Variável` == var,]$`Parâmetro`[[1]] - 2
-  hypothesis_result_massa_corr <- check_hypothesis(variable = var, alpha_value = 0.05, df = df, t_statistic = massa_corr_df$`Estatística`)
-  hypothesis_result_massa_corr_df[nrow(hypothesis_result_massa_corr_df) + 1,] <- c(var, hypothesis_result_massa_corr)
+  t_statistic <- massa_corr_df[massa_corr_df$`Variável` == var,]$`Estatística`[[1]]
+  if (is.numeric(t_statistic)) {
+    hypothesis_result_massa_corr <- check_hypothesis(alpha_value = 0.05, df = df, t_statistic = t_statistic)
+    hypothesis_result_massa_corr_df[nrow(hypothesis_result_massa_corr_df) + 1,] <- c(var, hypothesis_result_massa_corr)
+  }
 }
 
 knitr::kable(hypothesis_result_massa_corr_df)
