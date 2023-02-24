@@ -173,6 +173,8 @@ knitr::kable(massa_corr_df)
 ```
 
 # Teste de hipótese para verificar linearidade da variável em relação a variável dens
+Ou seja, a hipótese nula está assumindo que não há relação linear das propostas variáveis
+em contraste com a variável dens (Densidade de indivíduos de minhocas por cm³)
 
 ```{r, echo = FALSE, include = TRUE}
 check_hypothesis <- function(alpha_value, df, t_statistic) {
@@ -197,6 +199,8 @@ knitr::kable(hypothesis_result_dens_corr_df)
 ```
 
 # Teste de hipótese para verificar linearidade da variável em relação a variável massa
+Ou seja, a hipótese nula está assumindo que não há relação linear das propostas variáveis
+em contraste com a variável massa (Massa de minhocas em Kg/m³)
 
 ```{r, echo = FALSE, include = TRUE}
 hypothesis_result_massa_corr_df <- data.frame(`Variável` = character(), `Rejeita hipótese nula` = logical())
